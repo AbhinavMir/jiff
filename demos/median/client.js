@@ -9,23 +9,15 @@ function connect() {
   var party_count = parseInt($('#count').val());
 
   if (isNaN(party_count)) {
-    $('#output').append(
-      '<p>Invalid party count, please input a valid number!</p>'
-    );
+    $('#output').append("<p class='error'>Party count must be a valid number!</p>");
     $('#connectButton').prop('disabled', false);
   } else {
-    var options = {
-      party_count: party_count,
-      decimal_digits: 5,
-      integer_digits: 5,
-      Zp: '32416190071',
-    };
+    var options = { party_count: party_count };
     options.onError = function (_, error) {
-      $('#output').append('<p>' + error + '</p>');
+      $('#output').append("<p class='error'>"+error+'</p>');
     };
     options.onConnect = function () {
-      $('#button').attr('disabled', false);
-      $('#output').append('<p>All parties Connected!</p>');
+      $('#processButton').attr('disabled', false); $('#output').append('<p>All parties Connected!</p>');
     };
 
     var hostname = window.location.hostname.trim();
@@ -37,12 +29,9 @@ function connect() {
       hostname = 'http://' + hostname;
     }
     if (hostname.endsWith('/')) {
-      hostname = hostname.substring(0, hostname.length - 1);
+      hostname = hostname.substring(0, hostname.length-1);
     }
-    if (
-      hostname.indexOf(':') > -1 &&
-      hostname.lastIndexOf(':') > hostname.indexOf(':')
-    ) {
+    if (hostname.indexOf(':') > -1 && hostname.lastIndexOf(':') > hostname.indexOf(':')) {
       hostname = hostname.substring(0, hostname.lastIndexOf(':'));
     }
 
@@ -54,23 +43,25 @@ function connect() {
 
 // eslint-disable-next-line no-unused-vars
 function submit() {
-  var input = parseFloat($('#number').val());
+  var arr = JSON.parse(document.getElementById('inputText').value);
 
-  if (isNaN(input)) {
-    $('#output').append('<p>Invalid input, please input a valid number!</p>');
-  } else if (100 < input || input < 0) {
-    $('#output').append('<p>Invalid input, please input a number between 0 and 100!</p>'
-    );
-  } else {
-    $('#button').attr('disabled', true);
-    $('#output').append('<p>Starting...</p>');
-    // eslint-disable-next-line no-undef
-    var promise = mpc.compute(input);
-    promise.then(handleResult);
+  for (var i = 0; i < arr.length; i++) {
+    if (typeof(arr[i]) !== 'number') {
+      alert('Please input an array of integers.');
+      return;
+    }
   }
+
+  $('#processButton').attr('disabled', true);
+  $('#output').append('<p>Starting...</p>');
+
+  // eslint-disable-next-line no-undef
+  var promise = mpc.compute(arr);
+  promise.then(handleResult);
 }
 
+// eslint-disable-next-line no-unused-vars
 function handleResult(result) {
-  $('#output').append('<p>Result is: ' + result.toString(10) + '</p>');
+  $('#output').append('<p>Result is: ' + result + '</p>');
   $('#button').attr('disabled', false);
 }
