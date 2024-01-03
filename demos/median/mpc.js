@@ -43,6 +43,7 @@
   }
 
   function calculateMedian(arr) {
+    // using (static) jiffClient.helpers.floor(x) → {number}
     const mid = Math.floor(arr.length / 2);
     let median;
     if (arr.length % 2 === 0) { // even length
